@@ -1,13 +1,19 @@
 <template>
-  <div class="q-pa-md">
+  <div>
     <q-table
       flat
       bordered
+      ref="tableRef"
       title="Produtos"
       :rows="rows"
       :columns="columns"
       row-key="id"
-      dense
+      v-model:pagination="pagination"
+      :loading="loading"
+      :filter="filter"
+      binary-state-sort
+      @request="onRequest"
+      class="q-table"
     >
       <template v-slot:body-cell-forma_de_pagamento="props">
         <q-td :props="props">
@@ -21,6 +27,16 @@
             style="width: 100%; max-width: 300px"
           />
         </q-td>
+      </template>
+
+      <template v-slot:top-right>
+        <q-input
+          borderless
+          dense
+          debounce="300"
+          v-model="filter"
+          placeholder="Pesquisar"
+        />
       </template>
 
       <template v-slot:body-cell-actions="props">
@@ -94,7 +110,7 @@ const isDialogOpen = ref(false)
 const editableRow = reactive({ id: '', name: '', stock: 0, price: 0 })
 
 const columns = [
-  { name: 'id', align: 'center', label: 'ID', field: 'id', sortable: true },
+  { name: 'id', align: 'center', label: 'Código', field: 'id', sortable: true },
   { name: 'name', required: true, label: 'Produto', align: 'left', field: 'name', sortable: true },
   { name: 'stock', align: 'center', label: 'Estoque', field: 'stock', sortable: true },
   { name: 'forma_de_pagamento', align: 'center', label: 'Forma de Pagamento', field: 'forma_de_pagamento' },
@@ -103,6 +119,36 @@ const columns = [
 ]
 
 const rows = ref([])
+
+const filter = ref('')
+
+const pagination = ref({
+  sortBy: 'id',
+  descending: false,
+  page: 1,
+  rowsPerPage: 5
+})
+
+const loading = ref(false)
+
+function onRequest({ pagination, filter }) {
+  loading.value = true
+  console.log(filter)
+  // fetch(`http://localhost:3000/product?_page=${pagination.page}&_limit=${pagination.rowsPerPage}&_sort=${pagination.sortBy}&_order=${pagination.descending ? 'desc' : 'asc'}&q=${filter}`)
+  //   .then(response => response.json())
+  //   .then(data => {
+  //     rows.value = data.map(row => ({
+  //       id: row.id,
+  //       name: row.name,
+  //       stock: row.stock,
+  //       price: row.price[0],
+  //       priceOptions: row.price.map(option => ({ label: option, value: option })),
+  //       selectedPayment: row.forma_de_pagamento[0],
+  //       paymentOptions: row.forma_de_pagamento.map(option => ({ label: option, value: option })),
+  //     }))
+  //     loading.value = false
+  //   })
+}
 
 onMounted(async () => {
   const response = await fetch('http://localhost:3000/product')
@@ -160,3 +206,10 @@ function updatePrice(row, selectedValue) {
 
 
 </script>
+
+
+<style scoped>
+.q-table {
+  margin-top: 20px;
+}
+</style>

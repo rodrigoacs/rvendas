@@ -1,13 +1,19 @@
 <template>
-  <div class="q-pa-md">
+  <div>
     <q-table
       flat
       bordered
+      ref="tableRef"
       title="Clientes"
       :rows="rows"
       :columns="columns"
       row-key="id"
-      dense
+      v-model:pagination="pagination"
+      :loading="loading"
+      :filter="filter"
+      binary-state-sort
+      @request="onRequest"
+      class="q-table"
     >
       <template v-slot:body-cell-forma_de_pagamento="props">
         <q-td :props="props">
@@ -21,6 +27,16 @@
             style="width: 100%; max-width: 300px"
           />
         </q-td>
+      </template>
+
+      <template v-slot:top-right>
+        <q-input
+          borderless
+          dense
+          debounce="300"
+          v-model="filter"
+          placeholder="Pesquisar"
+        />
       </template>
 
       <template v-slot:body-cell-actions="props">
@@ -91,9 +107,17 @@ import { ref, onMounted } from 'vue'
 const rows = ref([])
 const isDialogOpen = ref(false)
 const editableRow = ref({})
+const filter = ref('')
+const loading = ref(false)
+const pagination = ref({
+  sortBy: 'id',
+  descending: false,
+  page: 1,
+  rowsPerPage: 5
+})
 
 const columns = [
-  { name: 'id', label: 'ID', align: 'left', field: 'id' },
+  { name: 'id', label: 'Código', align: 'left', field: 'id' },
   { name: 'name', label: 'Nome', align: 'left', field: 'name' },
   { name: 'street_address', label: 'Rua', align: 'left', field: 'street_address' },
   { name: 'neighborhood', label: 'Bairro', align: 'left', field: 'neighborhood' },
@@ -121,3 +145,9 @@ onMounted(async () => {
 })
 
 </script>
+
+<style scoped>
+.q-table {
+  margin-top: 20px;
+}
+</style>
