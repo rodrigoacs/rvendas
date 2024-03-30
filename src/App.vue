@@ -14,17 +14,22 @@
     <q-tab
       :ripple="false"
       name="products"
-      label="Products"
+      label="Produtos"
       @click="changeRoute('/products')"
     />
     <q-tab
       :ripple="false"
       name="customers"
-      label="Customers"
+      label="Clientes"
       @click="changeRoute('/customers')"
     />
+    <q-tab
+      :ripple="false"
+      name="orders"
+      label="Pedidos"
+      @click="changeRoute('/orders')"
+    />
   </q-tabs>
-
   <RouterView />
 </template>
 

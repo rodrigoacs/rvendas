@@ -8,7 +8,6 @@
       :rows="rows"
       :columns="columns"
       row-key="id"
-      v-model:pagination="pagination"
       :loading="loading"
       :filter="filter"
       binary-state-sort
@@ -37,6 +36,12 @@
           v-model="filter"
           placeholder="Pesquisar"
         />
+        <q-btn
+          color="primary"
+          label="Adicionar Produto"
+          @click="IsAddDialogOpen = true"
+        >
+        </q-btn>
       </template>
 
       <template v-slot:body-cell-actions="props">
@@ -51,35 +56,35 @@
     </q-table>
 
     <q-dialog
-      v-model="isDialogOpen"
+      v-model="IsEditDialogOpen"
       persistent
     >
-      <q-card>
+      <q-card class="q-card">
         <q-card-section>
           <div class="text-h6">Editar Produto</div>
-        </q-card-section>
-
-        <q-card-section>
           <q-form
             @submit.prevent="saveChanges"
             @reset="resetForm"
           >
             <q-input
+              class="q-mt-md"
               filled
               v-model="editableRow.name"
-              label="Product Name"
+              label="Nome do produto"
             />
             <q-input
+              class="q-mt-md"
               type="number"
               filled
               v-model="editableRow.stock"
-              label="Stock"
+              label="Estoque"
             />
             <q-input
+              class="q-mt-md"
               filled
               mask="####.##"
               v-model="editableRow.price"
-              label="Price"
+              label="Preço"
             />
 
             <div class="q-mt-md">
@@ -100,13 +105,61 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <q-dialog
+      v-model="IsAddDialogOpen"
+      persistent
+    >
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Adicionar Produto</div>
+        </q-card-section>
+
+        <q-card-section>
+          <q-form>
+            <q-input
+              class="q-mb-md"
+              filled
+              label="Nome do Produto"
+            />
+            <q-input
+              class="q-mb-md"
+              type="number"
+              filled
+              label="Estoque"
+            />
+            <q-input
+              class="q-mb-md"
+              filled
+              mask="####.##"
+              label="Preço"
+            />
+
+            <div class="q-mt-md">
+              <q-btn
+                label="Salvar"
+                type="submit"
+                color="primary"
+              />
+              <q-btn
+                label="Cancelar"
+                flat
+                color="primary"
+                v-close-popup
+              />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, reactive } from 'vue'
 
-const isDialogOpen = ref(false)
+const IsEditDialogOpen = ref(false)
+const IsAddDialogOpen = ref(false)
 const editableRow = reactive({ id: '', name: '', stock: 0, price: 0 })
 
 const columns = [
@@ -121,34 +174,6 @@ const columns = [
 const rows = ref([])
 
 const filter = ref('')
-
-const pagination = ref({
-  sortBy: 'id',
-  descending: false,
-  page: 1,
-  rowsPerPage: 5
-})
-
-const loading = ref(false)
-
-function onRequest({ pagination, filter }) {
-  loading.value = true
-  console.log(filter)
-  // fetch(`http://localhost:3000/product?_page=${pagination.page}&_limit=${pagination.rowsPerPage}&_sort=${pagination.sortBy}&_order=${pagination.descending ? 'desc' : 'asc'}&q=${filter}`)
-  //   .then(response => response.json())
-  //   .then(data => {
-  //     rows.value = data.map(row => ({
-  //       id: row.id,
-  //       name: row.name,
-  //       stock: row.stock,
-  //       price: row.price[0],
-  //       priceOptions: row.price.map(option => ({ label: option, value: option })),
-  //       selectedPayment: row.forma_de_pagamento[0],
-  //       paymentOptions: row.forma_de_pagamento.map(option => ({ label: option, value: option })),
-  //     }))
-  //     loading.value = false
-  //   })
-}
 
 onMounted(async () => {
   const response = await fetch('http://localhost:3000/product')
@@ -166,7 +191,7 @@ onMounted(async () => {
 
 function editRow(row) {
   Object.assign(editableRow, row)
-  isDialogOpen.value = true
+  IsEditDialogOpen.value = true
 }
 
 function saveChanges() {
@@ -191,11 +216,11 @@ function saveChanges() {
     rows.value[index] = { ...editableRow }
   })
 
-  isDialogOpen.value = false
+  IsEditDialogOpen.value = false
 }
 
 function resetForm() {
-  isDialogOpen.value = false
+  IsEditDialogOpen.value = false
 }
 
 function updatePrice(row, selectedValue) {
@@ -211,5 +236,9 @@ function updatePrice(row, selectedValue) {
 <style scoped>
 .q-table {
   margin-top: 20px;
+}
+
+.q-card {
+  width: 80rem;
 }
 </style>

@@ -8,7 +8,6 @@
       :rows="rows"
       :columns="columns"
       row-key="id"
-      v-model:pagination="pagination"
       :loading="loading"
       :filter="filter"
       binary-state-sort
@@ -37,6 +36,12 @@
           v-model="filter"
           placeholder="Pesquisar"
         />
+        <q-btn
+          color="primary"
+          label="Adicionar Cliente"
+          @click="IsAddDialogOpen = true"
+        >
+        </q-btn>
       </template>
 
       <template v-slot:body-cell-actions="props">
@@ -51,7 +56,7 @@
     </q-table>
 
     <q-dialog
-      v-model="isDialogOpen"
+      v-model="IsEditDialogOpen"
       persistent
     >
       <q-card>
@@ -98,6 +103,66 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <q-dialog
+      v-model="IsAddDialogOpen"
+      persistent
+    >
+      <q-card class="q-card">
+        <q-card-section>
+          <div class="text-h6">Adicionar Cliente</div>
+        </q-card-section>
+
+        <q-card-section>
+          <q-form>
+            <q-input
+              class="q-mb-md"
+              filled
+              v-model="editableRow.name"
+              label="Nome"
+            />
+            <q-input
+              class="q-mb-md"
+              filled
+              v-model="editableRow.street_address"
+              label="Rua"
+            />
+            <q-input
+              class="q-mb-md"
+              filled
+              v-model="editableRow.neighborhood"
+              label="Bairro"
+            />
+            <q-input
+              class="q-mb-md"
+              filled
+              v-model="editableRow.house_number"
+              label="Numero"
+            />
+            <q-input
+              class="q-mb-md"
+              filled
+              v-model="editableRow.phone_number"
+              label="Telefone"
+            />
+
+            <div class="q-mt-md">
+              <q-btn
+                label="Salvar"
+                type="submit"
+                color="primary"
+              />
+              <q-btn
+                label="Cancelar"
+                flat
+                color="primary"
+                v-close-popup
+              />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -105,16 +170,12 @@
 import { ref, onMounted } from 'vue'
 
 const rows = ref([])
-const isDialogOpen = ref(false)
+const IsEditDialogOpen = ref(false)
+const IsAddDialogOpen = ref(false)
 const editableRow = ref({})
 const filter = ref('')
 const loading = ref(false)
-const pagination = ref({
-  sortBy: 'id',
-  descending: false,
-  page: 1,
-  rowsPerPage: 5
-})
+
 
 const columns = [
   { name: 'id', label: 'Código', align: 'left', field: 'id' },
@@ -128,7 +189,7 @@ const columns = [
 
 function editRow(row) {
   Object.assign(editableRow, row)
-  isDialogOpen.value = true
+  IsEditDialogOpen.value = true
 }
 
 onMounted(async () => {
@@ -149,5 +210,9 @@ onMounted(async () => {
 <style scoped>
 .q-table {
   margin-top: 20px;
+}
+
+.q-card {
+  width: 80rem;
 }
 </style>
