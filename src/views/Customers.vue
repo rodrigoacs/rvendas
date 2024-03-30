@@ -193,7 +193,7 @@ function editRow(row) {
 }
 
 onMounted(async () => {
-  const response = await fetch('http://localhost:3000/customer')
+  const response = await fetch('http://35.247.196.137:3000/customer')
   const data = await response.json()
   rows.value = data.map(row => ({
     id: row.id,
