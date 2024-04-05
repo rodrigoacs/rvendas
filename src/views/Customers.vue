@@ -23,7 +23,7 @@
             dense
             options-dense
             outlined
-            style="width: 100%; max-width: 300px"
+            style="width: 100%; width: 300px"
           />
         </q-td>
       </template>
@@ -39,6 +39,7 @@
         <q-btn
           color="primary"
           label="Adicionar Cliente"
+          class="add-btn"
           @click="IsAddDialogOpen = true"
         >
         </q-btn>
@@ -47,7 +48,7 @@
       <template v-slot:body-cell-actions="props">
         <q-td :props="props">
           <q-btn
-            icon="fa-solid fa-pen-to-square"
+            label="⚙️"
             flat
             @click="editRow(props.row)"
           />
@@ -187,6 +188,15 @@ const columns = [
   { name: 'actions', align: 'center', label: 'Actions', field: 'actions' }
 ]
 
+columns[0].style = 'width: 100px'
+columns[1].style = 'width: 300px'
+columns[2].style = 'width: 100px'
+columns[3].style = 'width: 50px'
+columns[4].style = 'width: 50px'
+columns[5].style = 'width: 100px'
+columns[6].style = 'width: 50px'
+
+
 function editRow(row) {
   Object.assign(editableRow, row)
   IsEditDialogOpen.value = true
@@ -214,5 +224,9 @@ onMounted(async () => {
 
 .q-card {
   width: 80rem;
+}
+
+.add-btn {
+  width: 180px;
 }
 </style>

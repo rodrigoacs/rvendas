@@ -39,6 +39,7 @@
         <q-btn
           color="primary"
           label="Adicionar Produto"
+          class="add-btn"
           @click="IsAddDialogOpen = true"
         >
         </q-btn>
@@ -47,7 +48,7 @@
       <template v-slot:body-cell-actions="props">
         <q-td :props="props">
           <q-btn
-            icon="fa-solid fa-pen-to-square"
+            label="⚙️"
             flat
             @click="editRow(props.row)"
           />
@@ -163,25 +164,30 @@ const IsAddDialogOpen = ref(false)
 const editableRow = reactive({ id: '', name: '', stock: 0, price: 0 })
 
 const columns = [
-  { name: 'id', align: 'center', label: 'Código', field: 'id', sortable: true },
+  { name: 'id', align: 'center', label: 'Código', field: 'id', sortable: true, },
   { name: 'name', required: true, label: 'Produto', align: 'left', field: 'name', sortable: true },
-  { name: 'stock', align: 'center', label: 'Estoque', field: 'stock', sortable: true },
   { name: 'forma_de_pagamento', align: 'center', label: 'Forma de Pagamento', field: 'forma_de_pagamento' },
   { name: 'price', align: 'center', label: 'Preço', field: 'price', sortable: true },
   { name: 'actions', align: 'center', label: 'Actions', field: 'actions' }
 ]
+
+// fit width column
+columns[0].style = 'width: 100px'
+columns[1].style = 'width: 300px'
+columns[2].style = 'width: 100px'
+columns[3].style = 'width: 50px'
+columns[4].style = 'width: 50px'
 
 const rows = ref([])
 
 const filter = ref('')
 
 onMounted(async () => {
-  const response = await fetch('http://35.247.196.137:3000/product')
+  const response = await fetch('http://localhost:3000/product')
   const data = await response.json()
   rows.value = data.map(row => ({
     id: row.id,
     name: row.name,
-    stock: row.stock,
     price: row.price[0],
     priceOptions: row.price.map(option => ({ label: option, value: option })),
     selectedPayment: row.forma_de_pagamento[0],
@@ -202,7 +208,7 @@ function saveChanges() {
     selectedPayment: editableRow.selectedPayment.value || editableRow.selectedPayment,
   }
 
-  fetch(`http://35.247.196.137:3000/product/${editableRow.id}`, {
+  fetch(`http://localhost:3000/product/${editableRow.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
@@ -229,9 +235,7 @@ function updatePrice(row, selectedValue) {
   row.price = price
 }
 
-
 </script>
-
 
 <style scoped>
 .q-table {
@@ -240,5 +244,9 @@ function updatePrice(row, selectedValue) {
 
 .q-card {
   width: 80rem;
+}
+
+.add-btn {
+  width: 180px;
 }
 </style>
