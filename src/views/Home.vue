@@ -1,6 +1,7 @@
 <template>
   <div class="q-pa-md">
-    <div class="text-h5">Bem vindo ao RVendas. {{ currentDate }}</div>
+    <div class="text-h5">Bem vindo ao RVendas. </div>
+    <div>{{ currentDate }}</div>
   </div>
 
 </template>
