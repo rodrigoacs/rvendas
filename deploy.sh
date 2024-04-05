@@ -1,3 +1,4 @@
+cd ./rvendas
 git pull >git.log
 if [ $(wc -l <git.log) -gt 1 ]; then
   echo "Deploying..."
