@@ -1,4 +1,3 @@
-cd /rvendas
 git pull
 if [ $(wc -l <cron-log) -gt 1 ]; then
   echo "Deploying..."
