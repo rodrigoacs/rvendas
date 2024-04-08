@@ -11,7 +11,7 @@ const port = 3000
 app.use(cors())
 app.use(bodyParser.json())
 
-app.use('/', express.static('/home/acs/rvendas/dist'))
+app.use('/', express.static('/app/dist'))
 
 app.get('/product', (req, res) => {
   db.any('select p.id, p.name, p.stock, json_agg(pp.name order by pp.id) as "forma_de_pagamento", json_agg(pp.price) as "price" from product p join product_price pp on p.id = pp.product_id group by p.id')
@@ -54,5 +54,7 @@ app.get('/customer', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`)
+  console.log("Current directory:", __dirname);
+
 })
 
