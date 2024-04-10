@@ -208,7 +208,7 @@ function saveChanges() {
     selectedPayment: editableRow.selectedPayment.value || editableRow.selectedPayment,
   }
 
-  fetch(`http://35.247.196.137:3000/product/${editableRow.id}`, {
+  fetch(`http://35.247.196.137/product/${editableRow.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
