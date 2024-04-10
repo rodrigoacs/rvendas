@@ -183,7 +183,7 @@ const rows = ref([])
 const filter = ref('')
 
 onMounted(async () => {
-  const response = await fetch('http://localhost:3000/product')
+  const response = await fetch('http://35.247.196.137:3000/product')
   const data = await response.json()
   rows.value = data.map(row => ({
     id: row.id,
@@ -208,7 +208,7 @@ function saveChanges() {
     selectedPayment: editableRow.selectedPayment.value || editableRow.selectedPayment,
   }
 
-  fetch(`http://localhost:3000/product/${editableRow.id}`, {
+  fetch(`http://35.247.196.137:3000/product/${editableRow.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
