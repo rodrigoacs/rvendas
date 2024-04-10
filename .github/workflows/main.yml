@@ -17,9 +17,5 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            cd /rvendas
-            git pull
-            npm run build
-            docker build . -t rvendas
-            docker compose up -d
+            ls
 
