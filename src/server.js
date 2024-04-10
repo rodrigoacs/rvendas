@@ -3,7 +3,10 @@ const pgp = require('pg-promise')()
 const cors = require('cors')
 const bodyParser = require('body-parser')
 
-const db = pgp('postgres://acs:acs1405arroba@35.247.196.137:5432/rvendas')
+const dbPassword = process.env.DB_PASSWORD
+const dbUser = process.env.DB_USER
+
+const db = pgp(`postgres://${dbUser}:${dbPassword}@35.247.196.137:5432/rvendas`)
 
 const app = express()
 const port = 3000
@@ -11,7 +14,8 @@ const port = 3000
 app.use(cors())
 app.use(bodyParser.json())
 
-app.use('/', express.static('/home/acs/rvendas/dist'))
+let path = __dirname.replace('src', 'dist')
+app.use('/', express.static(path))
 
 app.get('/product', (req, res) => {
   db.any('select p.id, p.name, p.stock, json_agg(pp.name order by pp.id) as "forma_de_pagamento", json_agg(pp.price) as "price" from product p join product_price pp on p.id = pp.product_id group by p.id')
@@ -54,5 +58,6 @@ app.get('/customer', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`)
+
 })
 
