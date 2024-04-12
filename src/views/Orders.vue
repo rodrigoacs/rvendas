@@ -25,7 +25,7 @@
         color="primary"
         label="Adicionar Pedido"
         @click="IsAddDialogOpen = true"
-        class="add-btn"
+        class="btn"
       >
       </q-btn>
     </template>
@@ -64,13 +64,12 @@
           color="primary"
           label="Adicionar Produto"
           @click="row => newOrderRows.push({ id: newOrderRows.length + 1, quantity: 1, name: 'Produto', unit_price: '', total_price: '' })"
-          class="add-btn add-product-btn"
+          class="btn add-product-btn"
         ></q-btn>
       </q-card-section>
 
       <q-card-section class="order-footer">
         <div>
-
           <q-select
             v-model="selectedClient"
             :options="clients"
@@ -85,7 +84,14 @@
             dense
             outlined
             readonly
-          ></q-input>
+          />
+
+          <q-input
+            v-model="observation"
+            dense
+            outlined
+            label="Observações"
+          />
         </div>
         <div>
 
@@ -114,6 +120,20 @@
         </div>
       </q-card-section>
 
+      <q-card-actions align="center">
+        <q-btn
+          class="btn"
+          color="primary"
+          label="Salvar"
+          @click="saveOrder"
+        />
+        <q-btn
+          class="btn"
+          color="red"
+          label="Cancelar"
+          @click="IsAddDialogOpen = false"
+        />
+      </q-card-actions>
     </q-card>
 
   </q-dialog>
@@ -191,7 +211,7 @@ const clientInfo = ref('rua 1, bairro 1, nº 1')
   max-width: 100rem !important;
 }
 
-.add-btn {
+.btn {
   width: 180px;
 }
 
@@ -214,7 +234,7 @@ const clientInfo = ref('rua 1, bairro 1, nº 1')
 
 .order-footer div {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 10px;
 }
 </style>

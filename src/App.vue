@@ -1,14 +1,13 @@
 <template>
   <q-tabs
     v-model="tab"
-    dense
     align="justify"
-    active-color="white"
+    active-color="blue"
   >
     <q-tab
       :ripple="false"
       name="home"
-      label="Home"
+      label="Página Inicial"
       @click="changeRoute('/')"
     />
     <q-tab
