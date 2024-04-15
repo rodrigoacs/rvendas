@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: deploy
+      - name: Deploy and build
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
@@ -20,5 +20,7 @@ jobs:
             cd rvendas
             git pull
             npm run build
-            echo ${{secrets.SUDO}} | sudo -S docker build . -t rvendas
-            echo ${{secrets.SUDO}} | sudo -S docker compose up -d
+            echo ${{secrets.SUDO}} | sudo -S docker build . -t rvendas:$(date +%s)
+            echo ${{secrets.SUDO}} | sudo -S docker compose down
+            echo ${{secrets.SUDO}} | sudo -S docker compose up -d --force-recreate
+            echo ${{secrets.SUDO}} | sudo -S docker image prune -f
