@@ -2,7 +2,7 @@
   <q-tabs
     v-model="tab"
     align="justify"
-    active-color="blue"
+    active-color="dark"
   >
     <q-tab
       :ripple="false"

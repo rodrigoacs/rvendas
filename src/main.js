@@ -8,4 +8,7 @@ import quasarUserOptions from './quasar-user-options'
 
 const app = createApp(App).use(Quasar, quasarUserOptions).use(router)
 
+// supress all Vue warnings
+app.config.warnHandler = () => {}
+
 app.mount('#app')

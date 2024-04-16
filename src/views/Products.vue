@@ -13,6 +13,7 @@
       binary-state-sort
       @request="onRequest"
       class="q-table"
+      v-model:pagination="pagination"
     >
       <template v-slot:body-cell-forma_de_pagamento="props">
         <q-td :props="props">
@@ -37,7 +38,7 @@
           placeholder="Pesquisar"
         />
         <q-btn
-          color="primary"
+          color="amber-10"
           label="Adicionar Produto"
           class="add-btn"
           @click="IsAddDialogOpen = true"
@@ -63,6 +64,20 @@
       <q-card class="q-card">
         <q-card-section>
           <div class="text-h6">Editar Produto</div>
+        </q-card-section>
+
+        <q-card-section>
+          <q-select
+            v-model="editableRow.selectedPayment"
+            :options="editableRow.paymentOptions"
+            @update:model-value="val => updatePrice(editableRow, val)"
+            label="Forma de Pagamento"
+            dense
+            options-dense
+            outlined
+            style="width: 100%"
+          />
+
           <q-form
             @submit.prevent="saveChanges"
             @reset="resetForm"
@@ -92,13 +107,13 @@
               <q-btn
                 label="Save"
                 type="submit"
-                color="primary"
+                color="amber-10"
               />
               <q-btn
                 label="Cancel"
                 type="reset"
                 flat
-                color="primary"
+                color="amber-10"
                 v-close-popup
               />
             </div>
@@ -140,12 +155,12 @@
               <q-btn
                 label="Salvar"
                 type="submit"
-                color="primary"
+                color="amber-10"
               />
               <q-btn
                 label="Cancelar"
                 flat
-                color="primary"
+                color="amber-10"
                 v-close-popup
               />
             </div>
@@ -158,6 +173,8 @@
 
 <script setup>
 import { ref, onMounted, reactive } from 'vue'
+
+const pagination = ref({ sortBy: 'id', descending: false, page: 1, rowsPerPage: 0 })
 
 const IsEditDialogOpen = ref(false)
 const IsAddDialogOpen = ref(false)

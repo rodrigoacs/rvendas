@@ -12,6 +12,7 @@
     binary-state-sort
     @request="onRequest"
     class="q-table"
+    v-model:pagination="pagination"
   >
     <template v-slot:top-right>
       <q-input
@@ -22,7 +23,7 @@
         placeholder="Pesquisar"
       />
       <q-btn
-        color="primary"
+        color="green-14"
         label="Adicionar Pedido"
         @click="IsAddDialogOpen = true"
         class="btn"
@@ -59,13 +60,73 @@
           class="q-table"
           :rows-per-page-options="[0]"
         >
+
+          <template v-slot:body-cell-quantity="props">
+            <q-td :props="props">
+              <q-input
+                v-model.number="props.row.quantity"
+                type="number"
+                dense
+                outlined
+                @update:model-value="updatePrice(props.row)"
+              />
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-product="props">
+            <q-td :props="props">
+              <q-select
+                v-model="props.row.product"
+                :options="products"
+                dense
+                outlined
+                @update:model-value="productId => updatePaymentMethods(props.row, productId) || updatePrice(props.row)"
+              />
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-payment_method="props">
+            <q-td :props="props">
+              <q-select
+                v-model="props.row.payment_method"
+                :options="props.row.availablePaymentMethods"
+                dense
+                outlined
+                @update:model-value="updatePrice(props.row)"
+              />
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-unit_price="props">
+            <q-td :props="props">
+              <q-input
+                v-model="props.row.unit_price"
+                readonly
+                dense
+                outlined
+              />
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-total_price="props">
+            <q-td :props="props">
+              <q-input
+                v-model="props.row.total_price"
+                readonly
+                dense
+                outlined
+              />
+            </q-td>
+          </template>
         </q-table>
+
         <q-btn
-          color="primary"
+          color="green-14"
           label="Adicionar Produto"
-          @click="row => newOrderRows.push({ id: newOrderRows.length + 1, quantity: 1, name: 'Produto', unit_price: '', total_price: '' })"
+          @click="addNewRow"
           class="btn add-product-btn"
         ></q-btn>
+
       </q-card-section>
 
       <q-card-section class="order-footer">
@@ -123,7 +184,7 @@
       <q-card-actions align="center">
         <q-btn
           class="btn"
-          color="primary"
+          color="green-14"
           label="Salvar"
           @click="saveOrder"
         />
@@ -140,7 +201,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+
+const newRowModel = {
+  id: 0,
+  quantity: 1,
+  name: '',
+  payment_method: '',
+  unit_price: 0,
+  total_price: 0
+}
 
 const rows = ref([
   { id: 1, codigo: '1', nome: 'João', produtos: '2', precos: 'R$ 100,00', fretes: 'R$ 10,00', data: '01/01/2021', },
@@ -165,23 +235,68 @@ const columns = ref([
   { name: 'actions', label: 'Ações', align: 'center', sortable: false }
 ])
 
+function addNewRow() {
+  newOrderRows.value.push({ ...newRowModel })
+}
+
 const loading = ref(false)
 const filter = ref('')
 const IsAddDialogOpen = ref(false)
 const freightValue = ref(0)
 const discountValue = ref(0)
-
 const totalPrice = ref(0)
-
 const newOrderRows = ref([])
+const pagination = ref({ sortBy: 'codigo', descending: false, page: 1, rowsPerPage: 0 })
 
 const newOrderColumns = ref([
-  { name: 'quantity', label: 'Quantidade', align: 'left', field: 'quantity' },
-  { name: 'product', label: 'Produto', align: 'left', field: 'name' },
-  { name: 'payment_method', label: 'Forma de Pagamento', align: 'left', field: 'payment_method' },
-  { name: 'unit_price', label: 'Preço Unitário', align: 'left', field: 'unit_price' },
-  { name: 'total_price', label: 'Preço Total', align: 'left', field: 'total_price' },
+  { name: 'quantity', label: 'Quantidade', align: 'left', field: 'quantity', format: (val, row) => row.quantity },
+  { name: 'product', label: 'Produto', align: 'left', field: 'product', format: (val, row) => row.product },
+  { name: 'payment_method', label: 'Forma de Pagamento', align: 'left', field: 'payment_method', format: (val, row) => row.payment_method },
+  { name: 'unit_price', label: 'Preço Unitário', align: 'left', field: 'unit_price', format: (val, row) => row.unit_price },
+  { name: 'total_price', label: 'Preço Total', align: 'left', field: 'total_price', format: (val, row) => row.total_price }
 ])
+
+const products = ref([])
+const paymentOptions = ref({})
+const productPrices = ref([])
+
+let selectedProduct = ref(null)
+
+function updatePrice(row) {
+  const selectedPaymentMethod = row.availablePaymentMethods.findIndex(method => method.value === row.payment_method.value)
+  row.unit_price = productPrices.value[selectedProduct.value][selectedPaymentMethod] || 0
+  row.total_price = row.unit_price * row.quantity
+}
+
+function updatePaymentMethods(row, productId) {
+  selectedProduct = productId
+
+  row.availablePaymentMethods = paymentOptions.value[productId.value] || []
+}
+
+function fetchProducts() {
+  fetch('http://35.247.196.137/product')
+    .then(response => response.json())
+    .then(data => {
+      products.value = data.map(item => ({
+        label: item.name,
+        value: item.id
+      }))
+      data.forEach(item => {
+        paymentOptions.value[item.id] = item.forma_de_pagamento.map(method => ({
+          label: method,
+          value: method
+        })),
+          productPrices.value[item.id] = item.price
+      })
+    })
+    .catch(error => {
+      console.error('Failed to fetch products:', error)
+      throw error
+    })
+}
+
+onMounted(fetchProducts)
 
 const selectedClient = ref('')
 
@@ -199,6 +314,9 @@ const clients = ref([
 ])
 
 const clientInfo = ref('rua 1, bairro 1, nº 1')
+
+const observation = ref('')
+
 </script>
 
 <style scoped>

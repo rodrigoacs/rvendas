@@ -13,6 +13,7 @@
       binary-state-sort
       @request="onRequest"
       class="q-table"
+      v-model:pagination="pagination"
     >
       <template v-slot:body-cell-forma_de_pagamento="props">
         <q-td :props="props">
@@ -37,7 +38,7 @@
           placeholder="Pesquisar"
         />
         <q-btn
-          color="primary"
+          color="indigo-14"
           label="Adicionar Cliente"
           class="add-btn"
           @click="IsAddDialogOpen = true"
@@ -90,13 +91,13 @@
               <q-btn
                 label="Save"
                 type="submit"
-                color="primary"
+                color="indigo-14"
               />
               <q-btn
                 label="Cancel"
                 type="reset"
                 flat
-                color="primary"
+                color="indigo-14"
                 v-close-popup
               />
             </div>
@@ -151,12 +152,12 @@
               <q-btn
                 label="Salvar"
                 type="submit"
-                color="primary"
+                color="indigo-14"
               />
               <q-btn
                 label="Cancelar"
                 flat
-                color="primary"
+                color="indigo-14"
                 v-close-popup
               />
             </div>
@@ -176,6 +177,7 @@ const IsAddDialogOpen = ref(false)
 const editableRow = ref({})
 const filter = ref('')
 const loading = ref(false)
+const pagination = ref({ sortBy: 'id', descending: false, page: 1, rowsPerPage: 0 })
 
 
 const columns = [
