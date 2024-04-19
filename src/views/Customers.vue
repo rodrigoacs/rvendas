@@ -14,6 +14,8 @@
       @request="onRequest"
       class="q-table"
       v-model:pagination="pagination"
+      hide-bottom
+
     >
       <template v-slot:body-cell-forma_de_pagamento="props">
         <q-td :props="props">
@@ -38,7 +40,7 @@
           placeholder="Pesquisar"
         />
         <q-btn
-          color="indigo-14"
+          color="teal-14"
           label="Adicionar Cliente"
           class="add-btn"
           @click="IsAddDialogOpen = true"
@@ -91,13 +93,13 @@
               <q-btn
                 label="Save"
                 type="submit"
-                color="indigo-14"
+                color="green"
               />
               <q-btn
                 label="Cancel"
                 type="reset"
                 flat
-                color="indigo-14"
+                color="red"
                 v-close-popup
               />
             </div>
@@ -152,12 +154,12 @@
               <q-btn
                 label="Salvar"
                 type="submit"
-                color="indigo-14"
+                color="green"
               />
               <q-btn
                 label="Cancelar"
                 flat
-                color="indigo-14"
+                color="red"
                 v-close-popup
               />
             </div>
@@ -187,7 +189,7 @@ const columns = [
   { name: 'neighborhood', label: 'Bairro', align: 'left', field: 'neighborhood' },
   { name: 'house_number', label: 'Numero', align: 'left', field: 'house_number' },
   { name: 'phone_number', label: 'Telefone', align: 'left', field: 'phone_number' },
-  { name: 'actions', align: 'center', label: 'Actions', field: 'actions' }
+  { name: 'actions', align: 'center', label: 'Editar', field: 'actions' }
 ]
 
 columns[0].style = 'width: 100px'

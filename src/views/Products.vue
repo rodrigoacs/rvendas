@@ -14,6 +14,7 @@
       @request="onRequest"
       class="q-table"
       v-model:pagination="pagination"
+      hide-bottom
     >
       <template v-slot:body-cell-forma_de_pagamento="props">
         <q-td :props="props">
@@ -38,7 +39,7 @@
           placeholder="Pesquisar"
         />
         <q-btn
-          color="amber-10"
+          color="teal-14"
           label="Adicionar Produto"
           class="add-btn"
           @click="IsAddDialogOpen = true"
@@ -107,13 +108,13 @@
               <q-btn
                 label="Save"
                 type="submit"
-                color="amber-10"
+                color="green"
               />
               <q-btn
                 label="Cancel"
                 type="reset"
                 flat
-                color="amber-10"
+                color="red"
                 v-close-popup
               />
             </div>
@@ -150,17 +151,22 @@
               mask="####.##"
               label="Preço"
             />
+            <q-input
+              class="q-mb-md"
+              filled
+              label="Forma de Pagamento"
+            />
 
             <div class="q-mt-md">
               <q-btn
                 label="Salvar"
                 type="submit"
-                color="amber-10"
+                color="green"
               />
               <q-btn
                 label="Cancelar"
                 flat
-                color="amber-10"
+                color="red"
                 v-close-popup
               />
             </div>
@@ -185,7 +191,7 @@ const columns = [
   { name: 'name', required: true, label: 'Produto', align: 'left', field: 'name', sortable: true },
   { name: 'forma_de_pagamento', align: 'center', label: 'Forma de Pagamento', field: 'forma_de_pagamento' },
   { name: 'price', align: 'center', label: 'Preço', field: 'price', sortable: true },
-  { name: 'actions', align: 'center', label: 'Actions', field: 'actions' }
+  { name: 'actions', align: 'center', label: 'Editar', field: 'actions' }
 ]
 
 // fit width column

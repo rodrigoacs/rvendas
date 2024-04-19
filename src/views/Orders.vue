@@ -13,6 +13,7 @@
     @request="onRequest"
     class="q-table"
     v-model:pagination="pagination"
+    hide-bottom
   >
     <template v-slot:top-right>
       <q-input
@@ -23,7 +24,7 @@
         placeholder="Pesquisar"
       />
       <q-btn
-        color="green-14"
+        color="teal-14"
         label="Adicionar Pedido"
         @click="IsAddDialogOpen = true"
         class="btn"
@@ -44,90 +45,84 @@
 
   <q-dialog v-model="IsAddDialogOpen">
     <q-card class="q-card">
-      <q-card-section>
-        <div class="text-h6">Novo Pedido</div>
-      </q-card-section>
-      <q-card-section>
-        <q-table
-          flat
-          bordered
-          title="Produtos"
-          :rows="newOrderRows"
-          :columns="newOrderColumns"
-          row-key="id"
-          binary-state-sort
-          @request="onRequest"
-          class="q-table"
-          :rows-per-page-options="[0]"
-        >
+      <q-table
+        dense
+        title="Novo Pedido"
+        :rows="newOrderRows"
+        :columns="newOrderColumns"
+        row-key="id"
+        @request="onRequest"
+        class="q-table"
+        :rows-per-page-options="[0]"
+        hide-bottom
+      >
 
-          <template v-slot:body-cell-quantity="props">
-            <q-td :props="props">
-              <q-input
-                v-model.number="props.row.quantity"
-                type="number"
-                dense
-                outlined
-                @update:model-value="updatePrice(props.row)"
-              />
-            </q-td>
-          </template>
+        <template v-slot:body-cell-quantity="props">
+          <q-td :props="props">
+            <q-input
+              v-model.number="props.row.quantity"
+              type="number"
+              dense
+              outlined
+              @update:model-value="updatePrice(props.row)"
+            />
+          </q-td>
+        </template>
 
-          <template v-slot:body-cell-product="props">
-            <q-td :props="props">
-              <q-select
-                v-model="props.row.product"
-                :options="products"
-                dense
-                outlined
-                @update:model-value="productId => updatePaymentMethods(props.row, productId) || updatePrice(props.row)"
-              />
-            </q-td>
-          </template>
+        <template v-slot:body-cell-product="props">
+          <q-td :props="props">
+            <q-select
+              v-model="props.row.product"
+              :options="products"
+              dense
+              outlined
+              @update:model-value="productId => updatePaymentMethods(props.row, productId) || updatePrice(props.row)"
+            />
+          </q-td>
+        </template>
 
-          <template v-slot:body-cell-payment_method="props">
-            <q-td :props="props">
-              <q-select
-                v-model="props.row.payment_method"
-                :options="props.row.availablePaymentMethods"
-                dense
-                outlined
-                @update:model-value="updatePrice(props.row)"
-              />
-            </q-td>
-          </template>
+        <template v-slot:body-cell-payment_method="props">
+          <q-td :props="props">
+            <q-select
+              v-model="props.row.payment_method"
+              :options="props.row.availablePaymentMethods"
+              dense
+              outlined
+              @update:model-value="updatePrice(props.row)"
+            />
+          </q-td>
+        </template>
 
-          <template v-slot:body-cell-unit_price="props">
-            <q-td :props="props">
-              <q-input
-                v-model="props.row.unit_price"
-                readonly
-                dense
-                outlined
-              />
-            </q-td>
-          </template>
+        <template v-slot:body-cell-unit_price="props">
+          <q-td :props="props">
+            <q-input
+              v-model="props.row.unit_price"
+              readonly
+              dense
+              outlined
+            />
+          </q-td>
+        </template>
 
-          <template v-slot:body-cell-total_price="props">
-            <q-td :props="props">
-              <q-input
-                v-model="props.row.total_price"
-                readonly
-                dense
-                outlined
-              />
-            </q-td>
-          </template>
-        </q-table>
+        <template v-slot:body-cell-total_price="props">
+          <q-td :props="props">
+            <q-input
+              v-model="props.row.total_price"
+              readonly
+              dense
+              outlined
+            />
+          </q-td>
+        </template>
+      </q-table>
 
-        <q-btn
-          color="green-14"
-          label="Adicionar Produto"
-          @click="addNewRow"
-          class="btn add-product-btn"
-        ></q-btn>
-
-      </q-card-section>
+      <q-btn
+        flat
+        round
+        label="+"
+        @click="addNewRow"
+        class=" add-product-btn"
+      />
 
       <q-card-section class="order-footer">
         <div>
@@ -184,8 +179,8 @@
       <q-card-actions align="center">
         <q-btn
           class="btn"
-          color="green-14"
-          label="Salvar"
+          color="green"
+          label="Finalizar"
           @click="saveOrder"
         />
         <q-btn
@@ -232,13 +227,14 @@ const columns = ref([
   { name: 'precos', label: 'Preços', align: 'left', field: 'precos', sortable: true },
   { name: 'fretes', label: 'Fretes', align: 'left', field: 'fretes', sortable: true },
   { name: 'data', label: 'Data', align: 'left', field: 'data', sortable: true },
-  { name: 'actions', label: 'Ações', align: 'center', sortable: false }
+  { name: 'actions', label: 'Editar', align: 'center', sortable: false }
 ])
 
 function addNewRow() {
   newOrderRows.value.push({ ...newRowModel })
 }
 
+let selectedProduct = ref(null)
 const loading = ref(false)
 const filter = ref('')
 const IsAddDialogOpen = ref(false)
@@ -247,20 +243,22 @@ const discountValue = ref(0)
 const totalPrice = ref(0)
 const newOrderRows = ref([])
 const pagination = ref({ sortBy: 'codigo', descending: false, page: 1, rowsPerPage: 0 })
-
-const newOrderColumns = ref([
-  { name: 'quantity', label: 'Quantidade', align: 'left', field: 'quantity', format: (val, row) => row.quantity },
-  { name: 'product', label: 'Produto', align: 'left', field: 'product', format: (val, row) => row.product },
-  { name: 'payment_method', label: 'Forma de Pagamento', align: 'left', field: 'payment_method', format: (val, row) => row.payment_method },
-  { name: 'unit_price', label: 'Preço Unitário', align: 'left', field: 'unit_price', format: (val, row) => row.unit_price },
-  { name: 'total_price', label: 'Preço Total', align: 'left', field: 'total_price', format: (val, row) => row.total_price }
-])
-
 const products = ref([])
 const paymentOptions = ref({})
 const productPrices = ref([])
+const newOrderColumns = [
+  { name: 'quantity', label: 'Quantidade', align: 'left', field: 'quantity' },
+  { name: 'product', label: 'Produto', align: 'left', field: 'product' },
+  { name: 'payment_method', label: 'Forma de Pagamento', align: 'left', field: 'payment_method' },
+  { name: 'unit_price', label: 'Preço Unitário', align: 'left', field: 'unit_price' },
+  { name: 'total_price', label: 'Preço Total', align: 'left', field: 'total_price' }
+]
 
-let selectedProduct = ref(null)
+newOrderColumns[0].style = 'width: 10px'
+newOrderColumns[1].style = 'width: 300px'
+newOrderColumns[2].style = 'width: 100px'
+newOrderColumns[3].style = 'width: 50px'
+newOrderColumns[4].style = 'width: 50px'
 
 function updatePrice(row) {
   const selectedPaymentMethod = row.availablePaymentMethods.findIndex(method => method.value === row.payment_method.value)
@@ -270,7 +268,6 @@ function updatePrice(row) {
 
 function updatePaymentMethods(row, productId) {
   selectedProduct = productId
-
   row.availablePaymentMethods = paymentOptions.value[productId.value] || []
 }
 
@@ -334,8 +331,10 @@ const observation = ref('')
 }
 
 .add-product-btn {
-  margin-top: 20px;
-  margin-left: calc(50% - 90px);
+  display: flex;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .order-footer {

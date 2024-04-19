@@ -2,8 +2,19 @@
   <q-tabs
     v-model="tab"
     align="justify"
-    active-color="dark"
+    active-color="teal-14"
   >
+    <q-toggle
+      v-model="sudo"
+      color="teal-14"
+    >
+      <q-tooltip
+        anchor="top middle"
+        self="bottom middle"
+      >
+        modo administrador
+      </q-tooltip>
+    </q-toggle>
     <q-tab
       :ripple="false"
       name="home"
@@ -30,6 +41,35 @@
     />
   </q-tabs>
   <RouterView />
+  <q-dialog
+    v-model="sudo"
+    persistent
+  >
+    <q-card>
+      <q-card-section>
+        <div class="text-h6">Modo Administrador</div>
+        <q-input label="Usuário" />
+        <q-input
+          label="Senha"
+          type="password"
+        />
+
+        <q-btn
+          label="Entrar"
+          color="green"
+          class="q-mt-md"
+        />
+
+        <q-btn
+          label="Cancelar"
+          color="red"
+          class="q-ml-md q-mt-md"
+          @click="sudo = false"
+        />
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+
 </template>
 
 <script setup>
@@ -46,6 +86,7 @@ import {
 const route = useRoute()
 const router = useRouter()
 const tab = ref('home')
+const sudo = ref(false)
 
 function changeRoute(path) {
   router.push(path)
