@@ -20,8 +20,8 @@ jobs:
             cd rvendas
             git pull
             npm run build
+            echo ${{secrets.SUDO}} | sudo -S docker compose down
             echo ${{secrets.SUDO}} | sudo -S sh -c 'docker rmi -f $(docker images -aq)'
             echo ${{secrets.SUDO}} | sudo -S docker build . -t rvendas:$(date +%s)
-            echo ${{secrets.SUDO}} | sudo -S docker compose down
             echo ${{secrets.SUDO}} | sudo -S docker compose up -d --force-recreate
             echo ${{secrets.SUDO}} | sudo -S docker image prune -f
