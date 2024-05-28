@@ -27,6 +27,7 @@ jobs:
           script: |
             cd acs/rvendas
             git pull
+            npm install
             npm run build
             sudo docker compose down
             sudo sh -c 'docker rmi -f $(docker images -aq)'
