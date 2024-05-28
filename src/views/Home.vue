@@ -26,7 +26,7 @@ const currentDate = ref(new Date().toLocaleString())
 // const totalClients = Math.floor(Math.random() * 100)
 
 setInterval(() => {
-  currentDate.value = new Date().toLocaleString()
+  currentDate.value = new Date().toLocaleString().split(',')[0] + ' - ' + new Date().toLocaleString().split(' ')[1]
 }, 200)
 
 </script>
